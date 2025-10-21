@@ -18,21 +18,17 @@ param(
 $ErrorActionPreference = "Stop"
 
 Write-Host @"
-╔════════════════════════════════════════════════════════════════╗
-║                                                                ║
-║          🚀 BUILD APK SIN DEVELOPER MODE 🚀                   ║
-║                                                                ║
-╚════════════════════════════════════════════════════════════════╝
+[BUILD APK SIN DEVELOPER MODE]
 "@ -ForegroundColor Green
 
-Write-Host "`n📋 CONFIGURACIÓN:" -ForegroundColor Cyan
+Write-Host "`n[CONFIGURACION:]" -ForegroundColor Cyan
 Write-Host "   Modo: $mode" -ForegroundColor White
-Write-Host "   Opción: --no-tree-shake-icons (sin symlinks)" -ForegroundColor White
+Write-Host "   Opcion: --no-tree-shake-icons (sin symlinks)" -ForegroundColor White
 
-Write-Host "`n⏳ INICIANDO COMPILACIÓN..." -ForegroundColor Yellow
+Write-Host "`n[INICIANDO COMPILACION...]" -ForegroundColor Yellow
 
 # Paso 1: Limpiar
-Write-Host "`n🧹 Paso 1/3: Limpiando build anterior..." -ForegroundColor Magenta
+Write-Host "`n[Paso 1/3: Limpiando build anterior...]" -ForegroundColor Magenta
 flutter clean
 if ($LASTEXITCODE -ne 0) {
     Write-Host "❌ Error al limpiar" -ForegroundColor Red
@@ -73,7 +69,7 @@ if ($LASTEXITCODE -ne 0) {
 $buildEnd = Get-Date
 $buildTime = ($buildEnd - $buildStart).TotalSeconds
 
-Write-Host "`n✅ COMPILACIÓN EXITOSA" -ForegroundColor Green
+Write-Host "`n[COMPILACION EXITOSA]" -ForegroundColor Green
 Write-Host "   Tiempo: $([Math]::Round($buildTime, 1)) segundos" -ForegroundColor Green
 
 # Buscar el APK compilado
@@ -89,19 +85,19 @@ Write-Host "   Ubicación: $(Resolve-Path $apkPath)" -ForegroundColor Green
 
 Write-Host @"
 
-╔════════════════════════════════════════════════════════════════╗
-║                                                                ║
-║                    ✅ ¡APK COMPILADO! ✅                      ║
-║                                                                ║
-║  Tu APK está en:                                              ║
-║  $apkPath                           ║
-║                                                                ║
-║  🎉 ¡COMPLETADO SIN DEVELOPER MODE!                         ║
-║                                                                ║
-║  📱 Para instalar en tu dispositivo:                          ║
-║     flutter install                                           ║
-║                                                                ║
-╚════════════════════════════════════════════════════════════════╝
+[========================================]
+[                                        ]
+[         !APK COMPILADO!               ]
+[                                        ]
+[  Tu APK esta en:                      ]
+[  $apkPath                  ]
+[                                        ]
+[  !COMPLETADO SIN DEVELOPER MODE!      ]
+[                                        ]
+[  Para instalar en tu dispositivo:     ]
+[     flutter install                   ]
+[                                        ]
+[========================================]
 "@ -ForegroundColor Green
 
-Write-Host "`n¡Tu APK está listo! 🚀`n" -ForegroundColor Cyan
+Write-Host "`n!Tu APK esta listo!`n" -ForegroundColor Cyan
