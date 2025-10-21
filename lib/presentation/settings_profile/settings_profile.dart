@@ -233,7 +233,7 @@ class _SettingsProfileState extends State<SettingsProfile> {
               items: [
                 SettingsItem(
                   title: 'Acerca de',
-                  subtitle: 'Versión 1.0.0 - Completamente local',
+                  subtitle: 'Versión 1.1.0 - Completamente local',
                   iconName: 'info',
                   onTap: () {
                     _showAboutDialog();

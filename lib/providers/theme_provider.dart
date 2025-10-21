@@ -21,6 +21,14 @@ class ThemeProvider extends ChangeNotifier {
       
       if (savedMode != null) {
         _themeMode = savedMode == 'dark' ? ThemeMode.dark : ThemeMode.light;
+      } else {
+        // Check legacy darkMode setting from LocalDataService
+        final darkMode = prefs.getBool('darkMode');
+        if (darkMode != null) {
+          _themeMode = darkMode ? ThemeMode.dark : ThemeMode.light;
+          // Migrate to new key
+          await prefs.setString(_themeModeKey, darkMode ? 'dark' : 'light');
+        }
       }
       
       _isInitialized = true;
