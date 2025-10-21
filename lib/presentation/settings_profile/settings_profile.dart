@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
+import 'package:provider/provider.dart';
 
 import '../../core/app_export.dart';
 import '../../services/local_data_service.dart';
+import '../../providers/theme_provider.dart';
 import './widgets/data_export_widget.dart';
 import './widgets/language_selector_widget.dart';
 import './widgets/profile_header_widget.dart';
@@ -35,7 +37,7 @@ class _SettingsProfileState extends State<SettingsProfile> {
         isLoading = true;
       });
 
-      userProfile = await _dataService.getUserProfile();
+      userProfile = await _dataService.getUserProfile() ?? {};
       appSettings = await _dataService.getSettings();
 
       setState(() {
@@ -55,6 +57,13 @@ class _SettingsProfileState extends State<SettingsProfile> {
       setState(() {
         appSettings[key] = value;
       });
+      
+      // If dark mode is toggled, update the theme provider
+      if (key == 'darkMode' && mounted) {
+        final themeProvider = Provider.of<ThemeProvider>(context, listen: false);
+        await themeProvider.setThemeMode(value ? ThemeMode.dark : ThemeMode.light);
+      }
+      
       _showSuccessMessage('Configuración actualizada');
     } catch (e) {
       _showErrorMessage('Error al actualizar configuración');
@@ -224,7 +233,7 @@ class _SettingsProfileState extends State<SettingsProfile> {
               items: [
                 SettingsItem(
                   title: 'Acerca de',
-                  subtitle: 'Versión 1.0.0 - Completamente local',
+                  subtitle: 'Versión 1.1.0 - Completamente local',
                   iconName: 'info',
                   onTap: () {
                     _showAboutDialog();

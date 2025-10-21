@@ -6,6 +6,7 @@ import 'package:sizer/sizer.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 
 import '../../core/app_export.dart';
+import '../../services/local_data_service.dart';
 import './widgets/breathing_logo_widget.dart';
 import './widgets/gradient_background_widget.dart';
 import './widgets/loading_indicator_widget.dart';
@@ -20,44 +21,15 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen>
     with TickerProviderStateMixin {
   double _loadingProgress = 0.0;
-  // ignore: unused_field
-  bool _isInitialized = false; // kept for future init state checks
   bool _hasNetworkTimeout = false;
   bool _reduceMotion = false;
   String _loadingMessage = 'Inicializando...';
-
-  // Mock user data for demonstration
-  final Map<String, dynamic> _mockUserData = {
-    "userId": "user_12345",
-    "isAuthenticated": false,
-    "isFirstTime": true,
-    "lastSyncDate": "2025-10-15T22:43:13.444839",
-    "smokingData": {
-      "todayCount": 0,
-      "weeklyGoal": 10,
-      "quitAttempts": 0,
-      "lastCigarette": null,
-    },
-    "preferences": {
-      "notifications": true,
-      "darkMode": false,
-      "language": "es",
-      "reduceMotion": false,
-    }
-  };
+  final LocalDataService _dataService = LocalDataService();
 
   @override
   void initState() {
     super.initState();
-    _checkReduceMotion();
     _initializeApp();
-  }
-
-  void _checkReduceMotion() {
-    // Check for reduced motion preference
-    setState(() {
-      _reduceMotion = _mockUserData["preferences"]["reduceMotion"] as bool;
-    });
   }
 
   Future<void> _initializeApp() async {
@@ -74,22 +46,17 @@ class _SplashScreenState extends State<SplashScreen>
 
       // Step 1: Check network connectivity (with timeout)
       await _checkConnectivity();
-      _updateProgress(0.2, 'Verificando conexión...');
+      _updateProgress(0.25, 'Verificando conexión...');
 
       // Step 2: Load user preferences
       await _loadUserPreferences();
-      _updateProgress(0.4, 'Cargando preferencias...');
+      _updateProgress(0.5, 'Cargando preferencias...');
 
-      // Step 3: Check authentication status
-      await _checkAuthenticationStatus();
-      _updateProgress(0.6, 'Verificando sesión...');
+      // Step 3: Initialize data service
+      await _dataService.init();
+      _updateProgress(0.75, 'Preparando aplicación...');
 
-      // Step 4: Sync offline data
-      await _syncOfflineData();
-      _updateProgress(0.8, 'Sincronizando datos...');
-
-      // Step 5: Prepare health calculations
-      await _prepareHealthCalculations();
+      // Step 4: Complete
       _updateProgress(1.0, 'Completado');
 
       // Wait for minimum splash duration
@@ -111,7 +78,6 @@ class _SplashScreenState extends State<SplashScreen>
 
       bool noConnection = true;
       if (result is List<ConnectivityResult>) {
-        // No connection if list is empty or all are none
         noConnection = result.isEmpty ||
             result.every((r) => r == ConnectivityResult.none);
       } else if (result is ConnectivityResult) {
@@ -139,81 +105,16 @@ class _SplashScreenState extends State<SplashScreen>
 
     try {
       final prefs = await SharedPreferences.getInstance();
-
-      // Load user preferences from local storage
-      final bool? isFirstTime = prefs.getBool('isFirstTime');
-      final bool? isAuthenticated = prefs.getBool('isAuthenticated');
-      final String? lastSyncDate = prefs.getString('lastSyncDate');
-
-      // Update mock data with actual preferences if available
-      if (isFirstTime != null) {
-        _mockUserData["isFirstTime"] = isFirstTime;
-      }
-      if (isAuthenticated != null) {
-        _mockUserData["isAuthenticated"] = isAuthenticated;
-      }
-      if (lastSyncDate != null) {
-        _mockUserData["lastSyncDate"] = lastSyncDate;
+      final bool? reduceMotion = prefs.getBool('reduceMotion');
+      
+      if (reduceMotion != null) {
+        setState(() {
+          _reduceMotion = reduceMotion;
+        });
       }
     } catch (e) {
-      // Use default preferences if loading fails
       debugPrint('Error loading preferences: $e');
     }
-  }
-
-  Future<void> _checkAuthenticationStatus() async {
-    await Future.delayed(const Duration(milliseconds: 400));
-
-    // Simulate authentication check
-    // In real app, this would validate tokens, check session expiry, etc.
-    final bool isAuthenticated = _mockUserData["isAuthenticated"] as bool;
-
-    if (isAuthenticated) {
-      // Validate session token (mock)
-      await Future.delayed(const Duration(milliseconds: 200));
-    }
-  }
-
-  Future<void> _syncOfflineData() async {
-    await Future.delayed(const Duration(milliseconds: 500));
-
-    if (!_hasNetworkTimeout) {
-      // Simulate syncing offline smoking data
-      // ignore: unused_local_variable
-      final Map<String, dynamic> smokingData =
-          _mockUserData["smokingData"] as Map<String, dynamic>;
-
-      // Mock sync operations
-      await Future.delayed(const Duration(milliseconds: 300));
-
-      // Update last sync date
-      _mockUserData["lastSyncDate"] = DateTime.now().toIso8601String();
-
-      try {
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.setString(
-            'lastSyncDate', _mockUserData["lastSyncDate"] as String);
-      } catch (e) {
-        debugPrint('Error saving sync date: $e');
-      }
-    }
-  }
-
-  Future<void> _prepareHealthCalculations() async {
-    await Future.delayed(const Duration(milliseconds: 300));
-
-    // Simulate preparing health improvement calculations
-  // Use mock for demonstrating background work
-  final Map<String, dynamic> smokingData =
-    _mockUserData["smokingData"] as Map<String, dynamic>;
-  // Simple no-op based on mock to avoid unused warnings
-  if ((smokingData["todayCount"] as int) >= 0 &&
-    (smokingData["weeklyGoal"] as int) >= 0) {
-    // simulated
-  }
-
-    // Calculate progress and health metrics
-    await Future.delayed(const Duration(milliseconds: 200));
   }
 
   void _updateProgress(double progress, String message) {
@@ -225,28 +126,27 @@ class _SplashScreenState extends State<SplashScreen>
     }
   }
 
-  void _navigateToNextScreen() {
+  Future<void> _navigateToNextScreen() async {
     if (!mounted) return;
 
-    final bool isAuthenticated = _mockUserData["isAuthenticated"] as bool;
-    final bool isFirstTime = _mockUserData["isFirstTime"] as bool;
+    // Check if user has completed onboarding
+    final bool hasCompletedOnboarding = await _dataService.hasCompletedOnboarding();
 
     // Determine navigation path
     String nextRoute;
 
-    if (isAuthenticated) {
-      // Authenticated users go to dashboard
-      nextRoute = '/dashboard-home';
-    } else if (isFirstTime) {
-      // New users see onboarding (using settings as placeholder)
-      nextRoute = '/settings-profile';
+    if (!hasCompletedOnboarding) {
+      // New users see onboarding
+      nextRoute = '/onboarding';
     } else {
-      // Returning non-authenticated users see login (using craving management as placeholder)
-      nextRoute = '/craving-management';
+      // Returning users go to dashboard
+      nextRoute = '/dashboard-home';
     }
 
-    // Navigate with fade transition
-    Navigator.pushReplacementNamed(context, nextRoute);
+    // Navigate with replacement
+    if (mounted) {
+      Navigator.pushReplacementNamed(context, nextRoute);
+    }
   }
 
   void _handleInitializationError(dynamic error) {
@@ -259,10 +159,10 @@ class _SplashScreenState extends State<SplashScreen>
         _loadingMessage = 'Error de inicialización';
       });
 
-      // Navigate to dashboard after error delay
+      // Navigate to onboarding after error delay (safer fallback)
       Future.delayed(const Duration(seconds: 2), () {
         if (mounted) {
-          Navigator.pushReplacementNamed(context, '/dashboard-home');
+          Navigator.pushReplacementNamed(context, '/onboarding');
         }
       });
     }

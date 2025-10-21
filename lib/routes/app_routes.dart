@@ -5,10 +5,11 @@ import '../presentation/splash_screen/splash_screen.dart';
 import '../presentation/craving_management/craving_management.dart';
 import '../presentation/dashboard_home/dashboard_home.dart';
 import '../presentation/settings_profile/settings_profile.dart';
+import '../presentation/onboarding/onboarding_screen.dart';
 
 class AppRoutes {
-  // TODO: Add your routes here
   static const String initial = '/';
+  static const String onboarding = '/onboarding';
   static const String progressAnalytics = '/progress-analytics';
   static const String quitTimer = '/quit-timer';
   static const String splash = '/splash-screen';
@@ -17,13 +18,13 @@ class AppRoutes {
   static const String settingsProfile = '/settings-profile';
 
   static Map<String, WidgetBuilder> routes = {
-    initial: (context) => const DashboardHome(),
+    initial: (context) => const SplashScreen(),
+    onboarding: (context) => const OnboardingScreen(),
     progressAnalytics: (context) => const ProgressAnalytics(),
     quitTimer: (context) => const QuitTimer(),
     splash: (context) => const SplashScreen(),
     cravingManagement: (context) => const CravingManagement(),
     dashboardHome: (context) => const DashboardHome(),
     settingsProfile: (context) => const SettingsProfile(),
-    // TODO: Add your other routes here
   };
 }

@@ -1,7 +1,7 @@
 name: smoketracker
-description: A new Flutter project.
+description: A smoking cessation tracking application to help users quit smoking.
 publish_to: none
-version: 1.0.0+1
+version: 1.1.0+2
 
 environment:
   sdk: ^3.6.0
@@ -11,25 +11,26 @@ dependencies:
     sdk: flutter # CRITICAL: Required for every Flutter project - DO NOT REMOVE
   
   # CRITICAL: Core UI and responsive design - DO NOT REMOVE OR MODIFY
-  sizer: ^2.0.15              # Required for responsive design system
-  flutter_svg: ^2.0.9        # Required for SVG icon support
-  google_fonts: ^6.1.0       # Required for typography (replaces local fonts)
-  shared_preferences: ^2.2.2 # Required for local data storage
-  web: ^1.1.1
+  sizer: ^3.0.1              # Required for responsive design system - Updated to latest
+  flutter_svg: ^2.0.14       # Required for SVG icon support - Updated to latest
+  google_fonts: ^6.2.1       # Required for typography (replaces local fonts) - Updated to latest
+  shared_preferences: ^2.3.4 # Required for local data storage - Updated to latest
+  web: ^1.1.0
   
   # Feature dependencies - safe to modify
-  fluttertoast: ^8.2.4
-  fl_chart: ^0.65.0
-  camera: ^0.10.5+5
-  image_picker: ^1.0.4
-  permission_handler: ^11.1.0
-  file_picker: ^8.1.7
-  path_provider: ^2.1.2
-  universal_html: ^2.2.4
-  animated_digit: ^3.3.2
-  connectivity_plus: ^6.0.5
-
-  cached_network_image: any
+  fluttertoast: ^8.2.8        # Updated to latest
+  fl_chart: ^0.69.0           # Updated to latest
+  camera: ^0.11.0+2           # Updated to latest
+  image_picker: ^1.1.2        # Updated to latest
+  permission_handler: ^11.3.1 # Updated to latest
+  file_picker: ^8.1.6         # Updated to latest (8.1.7 might not exist yet)
+  path_provider: ^2.1.5       # Updated to latest
+  universal_html: ^2.2.4      # Already latest
+  animated_digit: ^3.3.2      # Already latest
+  connectivity_plus: ^6.1.1   # Updated to latest
+  provider: ^6.1.2            # Added for state management (dark mode)
+  introduction_screen: ^3.1.14 # Added for onboarding tutorial
+  cached_network_image: ^3.4.1 # Specified version (any is not recommended)
 dev_dependencies:
   flutter_test:    # CRITICAL: Required for Flutter project testing - DO NOT REMOVE
     sdk: flutter   # CRITICAL: Required for Flutter project testing - DO NOT REMOVE

@@ -33,42 +33,6 @@ class _DashboardHomeState extends State<DashboardHome>
   Map<String, dynamic> statistics = {};
   bool isLoading = true;
 
-  // Mock data
-  final List<Map<String, dynamic>> mockTechniques = [
-    {
-      "id": "breathing_4_7_8",
-      "name": "Respiración 4-7-8",
-      "description": "Inhala 4 seg, mantén 7 seg, exhala 8 seg",
-      "duration": 2,
-      "category": "breathing",
-      "icon": "air",
-    },
-    {
-      "id": "distraction_game",
-      "name": "Juego mental",
-      "description": "Cuenta hacia atrás desde 100 de 7 en 7",
-      "duration": 3,
-      "category": "distraction",
-      "icon": "psychology",
-    },
-    {
-      "id": "physical_walk",
-      "name": "Caminar",
-      "description": "Da una vuelta rápida de 5 minutos",
-      "duration": 5,
-      "category": "physical",
-      "icon": "directions_walk",
-    },
-    {
-      "id": "mindfulness_observe",
-      "name": "Observación consciente",
-      "description": "Observa 5 cosas que puedes ver",
-      "duration": 2,
-      "category": "mindfulness",
-      "icon": "visibility",
-    },
-  ];
-
   @override
   void initState() {
     super.initState();

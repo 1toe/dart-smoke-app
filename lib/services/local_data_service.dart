@@ -8,6 +8,7 @@ class LocalDataService {
   static const String _achievementsKey = 'achievements';
   static const String _cravingHistoryKey = 'craving_history';
   static const String _quitDateKey = 'quit_date';
+  static const String _hasCompletedOnboardingKey = 'has_completed_onboarding';
 
   // Singleton pattern
   static final LocalDataService _instance = LocalDataService._internal();
@@ -27,31 +28,25 @@ class LocalDataService {
     return _prefs!;
   }
 
+  // Onboarding Management
+  Future<bool> hasCompletedOnboarding() async {
+    await init();
+    return prefs.getBool(_hasCompletedOnboardingKey) ?? false;
+  }
+
+  Future<void> setOnboardingCompleted(bool completed) async {
+    await init();
+    await prefs.setBool(_hasCompletedOnboardingKey, completed);
+  }
+
   // User Profile Management
-  Future<Map<String, dynamic>> getUserProfile() async {
+  Future<Map<String, dynamic>?> getUserProfile() async {
     await init();
     final String? profileJson = prefs.getString(_userProfileKey);
     if (profileJson != null) {
       return json.decode(profileJson);
     }
-
-    // Return default profile
-    final defaultProfile = {
-      'name': 'María',
-      'email': 'carlos.rodriguez@email.com',
-      'joinDate':
-          DateTime.now().subtract(const Duration(days: 30)).toIso8601String(),
-      'quitDate': getQuitDate()?.toIso8601String(),
-      'profileImage':
-          'https://images.unsplash.com/photo-1494790108755-2616b612b17c?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&h=150',
-      'smokingStartAge': 18,
-      'cigarettesPerDay': 20,
-      'costPerPack': 5.50,
-      'cigarettesPerPack': 20,
-    };
-
-    await saveUserProfile(defaultProfile);
-    return defaultProfile;
+    return null; // Return null for new users
   }
 
   Future<void> saveUserProfile(Map<String, dynamic> profile) async {
@@ -66,11 +61,7 @@ class LocalDataService {
     if (quitDateStr != null) {
       return DateTime.parse(quitDateStr);
     }
-
-    // Set default quit date (3 days ago for demo purposes)
-    final defaultQuitDate = DateTime.now().subtract(const Duration(days: 3));
-    setQuitDate(defaultQuitDate);
-    return defaultQuitDate;
+    return null; // Return null for new users
   }
 
   Future<void> setQuitDate(DateTime date) async {
@@ -92,40 +83,7 @@ class LocalDataService {
       final List<dynamic> decodedList = json.decode(dataJson);
       return decodedList.cast<Map<String, dynamic>>();
     }
-
-    // Return default smoking data for demo
-    final defaultData = [
-      {
-        "id": 1,
-        "timestamp":
-            DateTime.now().subtract(const Duration(hours: 2)).toIso8601String(),
-        "location": "Casa",
-        "trigger": "Estrés",
-        "note": "Después de una reunión difícil",
-        "intensity": 7,
-      },
-      {
-        "id": 2,
-        "timestamp":
-            DateTime.now().subtract(const Duration(hours: 5)).toIso8601String(),
-        "location": "Oficina",
-        "trigger": "Descanso",
-        "note": "",
-        "intensity": 5,
-      },
-      {
-        "id": 3,
-        "timestamp":
-            DateTime.now().subtract(const Duration(hours: 8)).toIso8601String(),
-        "location": "Café",
-        "trigger": "Social",
-        "note": "Con compañeros de trabajo",
-        "intensity": 6,
-      },
-    ];
-
-    await saveSmokingData(defaultData);
-    return defaultData;
+    return []; // Return empty list for new users
   }
 
   Future<void> saveSmokingData(List<Map<String, dynamic>> data) async {
@@ -155,35 +113,7 @@ class LocalDataService {
       final List<dynamic> decodedList = json.decode(historyJson);
       return decodedList.cast<Map<String, dynamic>>();
     }
-
-    // Return default craving history
-    final defaultHistory = [
-      {
-        "id": 1,
-        "timestamp":
-            DateTime.now().subtract(const Duration(hours: 1)).toIso8601String(),
-        "intensity": 8,
-        "duration": 300, // 5 minutes in seconds
-        "technique": "breathing_4_7_8",
-        "success": true,
-        "trigger": "Estrés laboral",
-        "location": "Oficina",
-      },
-      {
-        "id": 2,
-        "timestamp":
-            DateTime.now().subtract(const Duration(hours: 6)).toIso8601String(),
-        "intensity": 6,
-        "duration": 180,
-        "technique": "distraction_game",
-        "success": true,
-        "trigger": "Aburrimiento",
-        "location": "Casa",
-      },
-    ];
-
-    await saveCravingHistory(defaultHistory);
-    return defaultHistory;
+    return []; // Return empty list for new users
   }
 
   Future<void> saveCravingHistory(List<Map<String, dynamic>> history) async {
@@ -369,7 +299,7 @@ class LocalDataService {
 
   // Weekly progress data
   List<Map<String, dynamic>> getWeeklyProgressData() {
-    // Generate mock weekly data
+    // Return empty data for new users - will be populated as they use the app
     final now = DateTime.now();
     final weekdays = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
 
@@ -377,14 +307,9 @@ class LocalDataService {
       final day = now.subtract(Duration(days: 6 - index));
       final dayName = weekdays[day.weekday - 1];
 
-      // Generate realistic mock data
-      final baseCount = 5 + (index * 2); // Gradual improvement
-      final variation = (index % 3) - 1; // Some daily variation
-      final count = (baseCount + variation).clamp(0, 25);
-
       return {
         'day': dayName,
-        'count': count,
+        'count': 0, // Start with 0 for new users
         'goal': 10,
         'date': day.toIso8601String(),
       };
